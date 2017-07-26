@@ -1,3 +1,5 @@
+// https://www.hackerrank.com/challenges/dynamic-array
+
 package main
 
 import "fmt"
