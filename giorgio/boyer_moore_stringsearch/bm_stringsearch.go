@@ -9,10 +9,9 @@ import (
 )
 
 // Read the file
-
 func readFile(filePath string) (string, error) {
 
-	// The buffer in bytes package allow for very efficient string concatenation
+	// The buffer in bytes package allow for efficient string concatenation
 	var fileLines bytes.Buffer
 
 	// use os specific api to open a file
@@ -27,10 +26,11 @@ func readFile(filePath string) (string, error) {
 	// function return
 	defer file.Close()
 
-	// The scanner created from a io.Reader object defaults to split on lines
+	// The scanner created from io.Reader object defaults to split on line
 	fileScanner := bufio.NewScanner(file)
 
-	// Since parameters are passed by value, the append fucntion creates a new slice
+	// Since parameters are passed by value,
+	// the append fucntion creates a new slice
 	for fileScanner.Scan() {
 		fileLines.WriteString(fileScanner.Text())
 	}
@@ -38,8 +38,27 @@ func readFile(filePath string) (string, error) {
 	return fileLines.String(), fileScanner.Err()
 }
 
+// Preprocessing: build the Bad Character table
+// For each character of the pattern assign a skip value based on the formula:
+// skip = len(pattern) - index(character) - 1
+func badCharTable(pattern string) map[rune]int {
+	badMap := make(map[rune]int)
+
+	// The cast to rune array allows the counting of actual characters
+	patternLength := len([]rune(pattern))
+
+	// For loops on strings iterate over both index and character
+	for ind, runeVal := range pattern {
+		badMap[runeVal] = patternLength - ind - 1
+	}
+
+	return badMap
+}
+
+// Main method
 func main() {
 	filePath := "lorem.txt"
+	pattern := "arcu"
 
 	bigText, err := readFile(filePath)
 	if err != nil {
@@ -47,5 +66,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	badMap := badCharTable(pattern)
+
 	fmt.Println(bigText)
+	fmt.Println(badMap)
 }
