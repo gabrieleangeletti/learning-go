@@ -1,3 +1,6 @@
+// Go implementation of the Boyer Moore string search algorithm
+// https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm
+
 package main
 
 import (
@@ -6,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 // Read the file
@@ -35,7 +39,7 @@ func readFile(filePath string) (string, error) {
 		fileLines.WriteString(fileScanner.Text())
 	}
 
-	return fileLines.String(), fileScanner.Err()
+	return strings.ToLower(fileLines.String()), fileScanner.Err()
 }
 
 // Preprocessing: build the Bad Character table
@@ -52,22 +56,76 @@ func badCharTable(pattern string) map[rune]int {
 		badMap[runeVal] = patternLength - ind - 1
 	}
 
+	// Forces the value of the last rune of the pattern to the pattern length
+	badMap[([]rune(pattern))[patternLength-1]] = patternLength
+
 	return badMap
+}
+
+// Find occurrencie(s of pattern in text using only the Bad Character rule
+// The allignemnt is from right to left --> t_cursor
+// The character comparison is from left ot right --> p_cursor
+func findMatches(patternString string, textString string, badMap map[rune]int) int {
+	occurrencies := 0
+
+	// Convert pattern and text strings to rune slices for efficient access
+	pattern := []rune(patternString)
+	text := []rune(textString)
+
+	p_len := len(pattern)
+	p_cursor := p_len - 1
+	t_cursor := 0
+
+	// The while loop is obtained through the for statement
+	for t_cursor+p_len <= len(text) {
+
+		t_r := text[t_cursor+p_cursor]
+		p_r := pattern[p_cursor]
+		fmt.Printf("%c - %c | ", t_r, p_r)
+
+		if p_r == t_r {
+			p_cursor--
+
+			if p_cursor < 0 {
+				p_cursor = p_len - 1
+				t_cursor += p_len
+				occurrencies++
+				fmt.Printf("String found\n")
+			}
+		} else {
+			p_cursor = p_len - 1
+			var skip int
+
+			// If text[i] is in badMap, skip] will get the mapped value and bad will be true
+			if val, bad := badMap[t_r]; bad {
+				skip = val
+			} else {
+				skip = p_len
+			}
+			fmt.Printf("%d \n", skip)
+			t_cursor += skip
+		}
+
+	}
+
+	return occurrencies
 }
 
 // Main method
 func main() {
 	filePath := "lorem.txt"
-	pattern := "arcu"
+	pattern := strings.ToLower("cursus")
 
 	bigText, err := readFile(filePath)
 	if err != nil {
 		// Fatal prints the error message and stops
 		log.Fatal(err)
 	}
+	fmt.Println(bigText)
 
 	badMap := badCharTable(pattern)
-
-	fmt.Println(bigText)
 	fmt.Println(badMap)
+
+	occurrencies := findMatches(pattern, bigText, badMap)
+	fmt.Println(occurrencies)
 }
