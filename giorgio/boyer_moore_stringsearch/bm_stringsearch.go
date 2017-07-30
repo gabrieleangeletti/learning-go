@@ -49,15 +49,17 @@ func badCharTable(pattern string) map[rune]int {
 	badMap := make(map[rune]int)
 
 	// The cast to rune array allows the counting of actual characters
-	patternLength := len([]rune(pattern))
+	p := []rune(pattern)
+	p_len := len(p)
 
 	// For loops on strings iterate over both index and character
-	for ind, runeVal := range pattern {
-		badMap[runeVal] = patternLength - ind - 1
+	for i := 0; i < p_len-1; i++ {
+		runeVal := p[i]
+		badMap[runeVal] = p_len - i - 1
 	}
 
 	// Forces the value of the last rune of the pattern to the pattern length
-	badMap[([]rune(pattern))[patternLength-1]] = patternLength
+	// badMap[([]rune(pattern))[p_len-1]] = p_len - 1
 
 	return badMap
 }
@@ -113,7 +115,8 @@ func findMatches(patternString string, textString string, badMap map[rune]int) i
 
 // Main method
 func main() {
-	filePath := "lorem.txt"
+	filePath := "lorem_small.txt"
+	// filePath := "lorem.txt"
 	pattern := strings.ToLower("cursus")
 
 	bigText, err := readFile(filePath)
