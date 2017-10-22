@@ -1,18 +1,18 @@
+/*
+ * Insertion Sort algorithm.
+ *
+ * Input: sequence of integers A.
+ * Output: sorted sequence.
+ *
+ * At each step j (starting from 1), get the j-th element in A, A[j].
+ * We assume that A[0: j - 1] is sorted, which is surely true when j = 1.
+ * Go backwards from i = j - 1 to 0 to find the right place in which insert
+ * A[j]. When the right place is found, insert A[j] and go to the next step.
+ */
+
 package main
 
 import "fmt"
-
-func insertionSort(arr []int) {
-  for j := 1; j < len(arr); j++ {
-    key := arr[j]
-
-    i := j - 1
-    for ; i >= 0 && arr[i] > key; i-- {
-      arr[i + 1] = arr[i]
-    }
-    arr[i + 1] = key
-  }
-}
 
 func main() {
   a := [6]int{5, 2, 4, 6, 1, 3}  // average case
@@ -29,4 +29,16 @@ func main() {
   fmt.Println(b)
   fmt.Println(c)
   fmt.Println(d)
+}
+
+func insertionSort(arr []int) {
+  for j := 1; j < len(arr); j++ {
+    key := arr[j]
+
+    i := j - 1
+    for ; i >= 0 && arr[i] > key; i-- {
+      arr[i + 1] = arr[i]
+    }
+    arr[i + 1] = key
+  }
 }
